@@ -134,12 +134,13 @@
           if (password !== confirm) return alert('Passwords do not match.');
 
           try {
+            const redirectTo = new URL('login.html', window.location.href).toString();
             const { data, error } = await sb.auth.signUp({
               email,
               password,
               options: {
                 data: { full_name: fullname },
-                emailRedirectTo: window.location.origin + '/login.html'
+                emailRedirectTo: redirectTo
               }
             });
             if (error) throw error;
