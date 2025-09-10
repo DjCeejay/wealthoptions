@@ -125,8 +125,18 @@
           try {
             const { data, error } = await sb.auth.signInWithPassword({ email, password });
             if (error) throw error;
-            // Redirect after login (adjust destination if you add a dashboard)
-            window.location.href = 'index.html';
+            const user = data.user;
+            // Route by role
+            let role = 'user';
+            try {
+              const { data: prof } = await sb
+                .from('profiles')
+                .select('role')
+                .eq('user_id', user.id)
+                .single();
+              if (prof?.role) role = prof.role;
+            } catch (_) {}
+            window.location.href = role === 'admin' ? 'dashboard.html' : 'user-dashboard.html';
           } catch (err) {
             alert(err.message || 'Login failed');
           }
