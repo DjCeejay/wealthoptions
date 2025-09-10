@@ -137,7 +137,10 @@
             const { data, error } = await sb.auth.signUp({
               email,
               password,
-              options: { data: { full_name: fullname } }
+              options: {
+                data: { full_name: fullname },
+                emailRedirectTo: window.location.origin + '/login.html'
+              }
             });
             if (error) throw error;
 

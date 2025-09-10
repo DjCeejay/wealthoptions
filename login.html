@@ -65,12 +65,15 @@
                       <input type="checkbox" class="form-check-input" id="remember">
                       <label class="form-check-label" for="remember">Remember me</label>
                     </div>
-                    <a href="#">Forgot password?</a>
-                  </div>
-                  <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                </form>
+                <a href="#">Forgot password?</a>
               </div>
+              <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+              <div class="text-center mt-3">
+                <button type="button" id="resendBtn" class="btn btn-link btn-sm">Resend verification email</button>
+              </div>
+              </form>
             </div>
+          </div>
             <p class="text-center mt-3">New here? <a href="register.html">Create an account</a></p>
           </div>
         </div>
@@ -122,6 +125,27 @@
             window.location.href = 'index.html';
           } catch (err) {
             alert(err.message || 'Login failed');
+          }
+        });
+
+        // Resend verification email
+        const resendBtn = document.getElementById('resendBtn');
+        resendBtn.addEventListener('click', async () => {
+          const email = document.getElementById('lemail').value.trim();
+          if (!email) {
+            alert('Enter your email above first.');
+            return;
+          }
+          try {
+            const { error } = await sb.auth.resend({
+              type: 'signup',
+              email,
+              options: { emailRedirectTo: window.location.origin + '/login.html' }
+            });
+            if (error) throw error;
+            alert('Verification email sent. Check your inbox.');
+          } catch (err) {
+            alert(err.message || 'Could not resend email');
           }
         });
       })();
