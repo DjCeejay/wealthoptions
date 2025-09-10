@@ -117,7 +117,42 @@
     <script src="assets/web/js/popper.min.js"></script>
     <script src="assets/web/js/bootstrap.min.js"></script>
     <script src="assets/web/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      (function () {
+        const supabaseUrl = 'https://maommxcopvdmihfqnkse.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hb21teGNvcHZkbWloZnFua3NlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MDIwNzIsImV4cCI6MjA3MzA3ODA3Mn0.1KLWKLdYnDDU4tEnxy4cXXCkqc_2-W6UtNho4Tha4es';
+        const sb = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const name = document.getElementById('name').value.trim();
+          const email = document.getElementById('cemail').value.trim();
+          const subject = document.getElementById('subject').value.trim();
+          const message = document.getElementById('message').value.trim();
+
+          // Combine subject into message so it works with a submissions table without subject column
+          const combinedMessage = subject ? `Subject: ${subject}\n\n${message}` : message;
+
+          try {
+            // Attach user_id if logged in (optional)
+            const { data: sessionData } = await sb.auth.getSession();
+            const userId = sessionData?.session?.user?.id || null;
+
+            const { error } = await sb
+              .from('submissions')
+              .insert([{ name, email, message: combinedMessage, user_id: userId }]);
+            if (error) throw error;
+
+            alert('Message sent successfully!');
+            form.reset();
+          } catch (err) {
+            alert(err.message || 'Failed to send message');
+          }
+        });
+      })();
+    </script>
   </div>
 </body>
 </html>
-
